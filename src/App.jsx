@@ -33,7 +33,7 @@ function App() {
 
   //functions
   const onLoad = () => {
-    const localData = localStorage.getItem("allData");
+    const localData = localStorage.getItem("expenses");
     if (localData) {
       const { money, transactionData } = JSON.parse(localData);
       setMoney(money);
