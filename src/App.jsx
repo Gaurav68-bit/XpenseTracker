@@ -28,7 +28,7 @@ function App() {
 
   useEffect(()=> {
     //save data to local storage and if it is initial render skip saving
-    if(!initialRender.current) localStorage.setItem("allData", JSON.stringify({money, transactionData}));
+    if(!initialRender.current) localStorage.setItem("expenses", JSON.stringify({money, transactionData}));
   }, [money, transactionData])
 
   //functions
@@ -40,7 +40,7 @@ function App() {
       setTransactionData(transactionData);
     } else {
       // If no local storage data, set initial values
-      localStorage.setItem("allData", JSON.stringify({
+      localStorage.setItem("expenses", JSON.stringify({
         money: { balance: 5000, expenses: 0 },
         transactionData: []
       }));
