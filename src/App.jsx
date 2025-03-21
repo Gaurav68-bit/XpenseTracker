@@ -15,7 +15,7 @@ function App() {
     balance: 5000,
     expenses: 0
   })
-  const [transactionData, setTransactionData] = useState(dummyData);
+  const [transactionData, setTransactionData] = useState([]);
   const initialRender = useRef(true);
 
   useEffect(()=>{
@@ -33,14 +33,20 @@ function App() {
 
   //functions
   const onLoad = () => {
-    //load data from local storage if present
     const localData = localStorage.getItem("allData");
-    if(localData){
-      const {money, transactionData} = JSON.parse(localData);
+    if (localData) {
+      const { money, transactionData } = JSON.parse(localData);
       setMoney(money);
       setTransactionData(transactionData);
+    } else {
+      // If no local storage data, set initial values
+      localStorage.setItem("allData", JSON.stringify({
+        money: { balance: 5000, expenses: 0 },
+        transactionData: []
+      }));
     }
-  }
+  };
+  
   
 
   return (
