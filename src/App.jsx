@@ -120,22 +120,27 @@ function App() {
   // Load transactions from localStorage
   const onLoad = () => {
     const localData = localStorage.getItem('expenses');
-
+  
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
-
         if (Array.isArray(parsedData)) {
           setTransactionData(parsedData);
         } else {
           setTransactionData([]); // Ensure valid format
+          localStorage.setItem('expenses', JSON.stringify([])); // Fix invalid data
         }
       } catch (error) {
         console.error('Error parsing localStorage data:', error);
-        setTransactionData([]); // Reset if parsing fails
+        setTransactionData([]);
+        localStorage.setItem('expenses', JSON.stringify([])); // Ensure it's initialized
       }
+    } else {
+      localStorage.setItem('expenses', JSON.stringify([]));
+      setTransactionData([]);
     }
   };
+  
 
   return (
     <main className='App'>
