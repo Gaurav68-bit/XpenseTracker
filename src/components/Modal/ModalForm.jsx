@@ -76,6 +76,7 @@ const ModalForm = props => {
 
             setMoney({balance: newBalance, expenses: newExpense});
             setTransactionData([...transactionData]);
+
         }
 
         toggleModal();
