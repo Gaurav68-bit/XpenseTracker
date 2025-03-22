@@ -100,43 +100,54 @@ function App() {
   const [transactionData, setTransactionData] = useState([]);
   const initialRender = useRef(true);
 
+  // useEffect(() => {
+  //   if (initialRender.current) {
+  //     onLoad();
+  //   }
+
+  //   return () => {
+  //     initialRender.current = false;
+  //   };
+  // }, []);
+
+
   useEffect(() => {
     if (initialRender.current) {
       onLoad();
-    }
-
-    return () => {
       initialRender.current = false;
-    };
+    }
   }, []);
 
   useEffect(() => {
     if (!initialRender.current) {
       // ✅ Store only transactionData as an array (ensures expenses.length works)
       localStorage.setItem('expenses', JSON.stringify(transactionData));
+      console.log("🔹 Data saved to localStorage:", JSON.parse(localStorage.getItem("expenses")));
+
     }
   }, [transactionData]); // Only persist transactions
+  
 
   // Load transactions from localStorage
   const onLoad = () => {
-    const localData = localStorage.getItem('expenses');
+    const localData = localStorage.getItem("expenses");
+    console.log("🔍 Loaded Data from localStorage:", localData);
   
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
+        console.log("✅ Parsed Data:", parsedData);
+  
         if (Array.isArray(parsedData)) {
           setTransactionData(parsedData);
         } else {
-          setTransactionData([]); // Ensure valid format
-          localStorage.setItem('expenses', JSON.stringify([])); // Fix invalid data
+          setTransactionData(parsedData.transactionData || []);
         }
       } catch (error) {
-        console.error('Error parsing localStorage data:', error);
+        console.error("❌ Error parsing localStorage data:", error);
         setTransactionData([]);
-        localStorage.setItem('expenses', JSON.stringify([])); // Ensure it's initialized
       }
     } else {
-      localStorage.setItem('expenses', JSON.stringify([]));
       setTransactionData([]);
     }
   };
