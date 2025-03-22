@@ -32,14 +32,42 @@ function App() {
   }, [money, transactionData])
 
   //functions
+  // const onLoad = () => {
+  //   const localData = localStorage.getItem("expenses");
+  //   if (localData) {
+  //     const { money, transactionData } = JSON.parse(localData);
+  //     setMoney(money);
+  //     setTransactionData(transactionData);
+  //   } else {
+  //     // If no local storage data, set initial values
+  //     localStorage.setItem("expenses", JSON.stringify({
+  //       money: { balance: 5000, expenses: 0 },
+  //       transactionData: []
+  //     }));
+  //   }
+  // };
   const onLoad = () => {
     const localData = localStorage.getItem("expenses");
+  
     if (localData) {
-      const { money, transactionData } = JSON.parse(localData);
-      setMoney(money);
-      setTransactionData(transactionData);
+      try {
+        const parsedData = JSON.parse(localData);
+        if (parsedData && typeof parsedData === 'object') {
+          const { money, transactionData } = parsedData;
+          
+          setMoney(money ?? { balance: 5000, expenses: 0 });  // Ensure money object is always set
+          setTransactionData(Array.isArray(transactionData) ? transactionData : []); // Ensure transactionData is always an array
+        } else {
+          throw new Error("Invalid data format");
+        }
+      } catch (error) {
+        console.error("Error loading data from localStorage:", error);
+        localStorage.setItem("expenses", JSON.stringify({
+          money: { balance: 5000, expenses: 0 },
+          transactionData: []
+        }));
+      }
     } else {
-      // If no local storage data, set initial values
       localStorage.setItem("expenses", JSON.stringify({
         money: { balance: 5000, expenses: 0 },
         transactionData: []
