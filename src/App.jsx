@@ -1,93 +1,155 @@
-import { useEffect, useRef, useState } from 'react'
+// import { useEffect, useRef, useState } from 'react'
+// //styles
+// import './App.css';
+// //components
+// import Navbar from './components/Navbar/Navbar'
+// import AppHead from './components/AppHead/AppHead'
+// import AppBody from './components/AppBody/AppBody';
+// //contexts
+// import { TransactionsContext, MoneyContext } from "./Contexts/AllContexts"
+// //variables
+// import { dummyData } from './dummyTransactions';
+
+// function App() {
+//   const [money, setMoney] = useState({
+//     balance: 5000,
+//     expenses: 0
+//   })
+//   const [transactionData, setTransactionData] = useState([]);
+//   const initialRender = useRef(true);
+
+//   // useEffect(()=>{
+//   //   if(initialRender.current)  onLoad();
+
+//   //   return(() => {
+//   //     initialRender.current = false;
+//   //   })
+//   // }, [])
+//   useEffect(() => {
+//     if (!initialRender.current) {
+//         localStorage.setItem("expenses", JSON.stringify(transactionData)); // Store only transactionData
+//     }
+// }, [transactionData]); 
+
+
+//   useEffect(()=> {
+//     //save data to local storage and if it is initial render skip saving
+//     if(!initialRender.current) localStorage.setItem("expenses", JSON.stringify({money, transactionData}));
+//   }, [money, transactionData])
+
+//   //functions
+//   // const onLoad = () => {
+//   //   const localData = localStorage.getItem("expenses");
+//   //   if (localData) {
+//   //     const { money, transactionData } = JSON.parse(localData);
+//   //     setMoney(money);
+//   //     setTransactionData(transactionData);
+//   //   } else {
+//   //     // If no local storage data, set initial values
+//   //     localStorage.setItem("expenses", JSON.stringify({
+//   //       money: { balance: 5000, expenses: 0 },
+//   //       transactionData: []
+//   //     }));
+//   //   }
+//   // };
+//   const onLoad = () => {
+//     const localData = localStorage.getItem("expenses");
+//     if (localData) {
+//         const transactionData = JSON.parse(localData);
+//         setTransactionData(transactionData); // Load only transaction data
+//     } else {
+//         localStorage.setItem("expenses", JSON.stringify([])); // Store an empty array initially
+//     }
+// };
+
+  
+  
+
+//   return (
+//     <main className='App'>
+//       <MoneyContext.Provider value={[money, setMoney]}>
+//       <TransactionsContext.Provider value={[transactionData, setTransactionData]}>
+//         <Navbar />
+//         <AppHead balance={money.balance} expenses={money.expenses}/>
+//         <AppBody transactionData={transactionData}/>
+//       </TransactionsContext.Provider> 
+//       </MoneyContext.Provider>
+//     </main>
+//   )
+// }
+
+// export default App
+
+
+import { useEffect, useRef, useState } from 'react';
 //styles
 import './App.css';
 //components
-import Navbar from './components/Navbar/Navbar'
-import AppHead from './components/AppHead/AppHead'
+import Navbar from './components/Navbar/Navbar';
+import AppHead from './components/AppHead/AppHead';
 import AppBody from './components/AppBody/AppBody';
 //contexts
-import { TransactionsContext, MoneyContext } from "./Contexts/AllContexts"
-//variables
-import { dummyData } from './dummyTransactions';
+import { TransactionsContext, MoneyContext } from './Contexts/AllContexts';
 
 function App() {
   const [money, setMoney] = useState({
     balance: 5000,
     expenses: 0
-  })
+  });
+
   const [transactionData, setTransactionData] = useState([]);
   const initialRender = useRef(true);
 
-  useEffect(()=>{
-    if(initialRender.current)  onLoad();
+  useEffect(() => {
+    if (initialRender.current) {
+      onLoad();
+    }
 
-    return(() => {
+    return () => {
       initialRender.current = false;
-    })
-  }, [])
+    };
+  }, []);
 
-  useEffect(()=> {
-    //save data to local storage and if it is initial render skip saving
-    if(!initialRender.current) localStorage.setItem("expenses", JSON.stringify({money, transactionData}));
-  }, [money, transactionData])
+  useEffect(() => {
+    if (!initialRender.current) {
+      // ✅ Store only transactionData as an array (ensures expenses.length works)
+      localStorage.setItem('expenses', JSON.stringify(transactionData));
+    }
+  }, [transactionData]); // Only persist transactions
 
-  //functions
-  // const onLoad = () => {
-  //   const localData = localStorage.getItem("expenses");
-  //   if (localData) {
-  //     const { money, transactionData } = JSON.parse(localData);
-  //     setMoney(money);
-  //     setTransactionData(transactionData);
-  //   } else {
-  //     // If no local storage data, set initial values
-  //     localStorage.setItem("expenses", JSON.stringify({
-  //       money: { balance: 5000, expenses: 0 },
-  //       transactionData: []
-  //     }));
-  //   }
-  // };
+  // Load transactions from localStorage
   const onLoad = () => {
-    const localData = localStorage.getItem("expenses");
-  
+    const localData = localStorage.getItem('expenses');
+
     if (localData) {
       try {
         const parsedData = JSON.parse(localData);
-        if (parsedData && typeof parsedData === 'object') {
-          const { money, transactionData } = parsedData;
-          
-          setMoney(money ?? { balance: 5000, expenses: 0 });  // Ensure money object is always set
-          setTransactionData(Array.isArray(transactionData) ? transactionData : []); // Ensure transactionData is always an array
+
+        if (Array.isArray(parsedData)) {
+          setTransactionData(parsedData);
         } else {
-          throw new Error("Invalid data format");
+          setTransactionData([]); // Ensure valid format
         }
       } catch (error) {
-        console.error("Error loading data from localStorage:", error);
-        localStorage.setItem("expenses", JSON.stringify({
-          money: { balance: 5000, expenses: 0 },
-          transactionData: []
-        }));
+        console.error('Error parsing localStorage data:', error);
+        setTransactionData([]); // Reset if parsing fails
       }
-    } else {
-      localStorage.setItem("expenses", JSON.stringify({
-        money: { balance: 5000, expenses: 0 },
-        transactionData: []
-      }));
     }
   };
-  
-  
 
   return (
     <main className='App'>
       <MoneyContext.Provider value={[money, setMoney]}>
-      <TransactionsContext.Provider value={[transactionData, setTransactionData]}>
-        <Navbar />
-        <AppHead balance={money.balance} expenses={money.expenses}/>
-        <AppBody transactionData={transactionData}/>
-      </TransactionsContext.Provider> 
+        <TransactionsContext.Provider value={[transactionData, setTransactionData]}>
+          <Navbar />
+          <AppHead balance={money.balance} expenses={money.expenses} />
+          <AppBody transactionData={transactionData} />
+        </TransactionsContext.Provider>
       </MoneyContext.Provider>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
+
+
