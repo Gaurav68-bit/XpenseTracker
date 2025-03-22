@@ -18,7 +18,7 @@ const ModalForm = props => {
     }, [])
     //states
     const [formData, setFormData] = useState({
-        name: "",
+        title: "",
         price: "",
         date: new Date().toISOString().split("T")[0], //gives date in yyyy-mm-dd format
         category: "",
@@ -27,9 +27,9 @@ const ModalForm = props => {
     //functions
     const updateFormDataWithExistingData = () => {
         console.log(existingData)
-        const {name, date, amount, category} = existingData;
+        const {title, date, amount, category} = existingData;
         setFormData({
-            name: name,
+            title: title,
             price: amount,
             date: date,
             category: category
@@ -56,7 +56,13 @@ const ModalForm = props => {
                 return alert("Out of balance");
             }else{
                 let newId = new Date / 1;
-                let newTransaction = {...formData, id: newId};
+                let newTransaction = { 
+                    id: newId,
+                    title: formData.title, 
+                    price: formData.price,
+                    date: formData.date,
+                    category: formData.category
+                };
                 setMoney({balance: newBalance, expenses: newExpense});
                 setTransactionData([...transactionData, newTransaction]);
             }
@@ -87,12 +93,12 @@ const ModalForm = props => {
             <div className='formInputsDiv'>
                 <input 
                 required
-                value={formData.name}
+                value={formData.title}
                 className="formInput" 
                 onChange={handleChange} 
                 placeholder='Title' 
                 type='text' 
-                name='name'
+                name='title'
                 autoFocus
                 />
                 <input 
